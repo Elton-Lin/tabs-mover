@@ -1,0 +1,47 @@
+{
+    "manifest_version": 2,
+  
+    "name": "Move Tabs",
+    "description": "move ur tabs to a new window",
+    "version": "0.0.0",
+    "author": "Elton Lin",
+    "homepage_url": "https://github.com/Elton-Lin",
+  
+    "icons": { 
+      "16": "tab_icon.png",
+      "48": "tab_icon.png",
+      "128": "tab_icon.png" 
+    },
+  
+    "browser_action": {
+      "default_icon": {
+        "19": "tab_icon.png",
+        "38": "tab_icon.png"
+      },
+      "default_title": "Move tab",
+      "default_popup": "popup.html"
+    },
+    "commands": {
+      "move-to-new-window": {
+        "suggested_key": {
+            "default": "Ctrl+Shift+Y",
+            "mac": "Command+Shift+Y"
+          },
+        "description": "move tabs to new window"
+      },
+      "_execute_browser_action": {
+  
+        "suggested_key": {
+          "default": "Ctrl+B",
+          "windows": "Ctrl+B",
+          "mac": "Command+B",
+          "chromeos": "Ctrl+B",
+          "linux": "Ctrl+B"
+        }
+      }
+    },
+  
+    "permissions": [
+      "tabs"
+    ]
+  }
