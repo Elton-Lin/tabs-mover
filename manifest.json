@@ -43,5 +43,9 @@
   
     "permissions": [
       "tabs"
-    ]
+    ],
+    "background": {
+      "persistent": false,
+      "scripts": ["background.js"]
+    }
   }

@@ -1,3 +1,6 @@
+// This is a background script, listed in the manifest
+
+
 
 // first create a new window and move selected tabs to it
 function move_to_new_window(tabs) {
@@ -23,8 +26,6 @@ function move_to_new_window(tabs) {
             // });
         });
 
-        // could close the empty tab, window.udpate...
-        // https://stackoverflow.com/questions/19972843/chrome-extension-to-move-multiple-tabs-to-new-window
     });
 
     
