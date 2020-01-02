@@ -37,8 +37,9 @@ chrome.commands.onCommand.addListener(function(command) {
     if(command == "move-to-new-window") {
         console.log('moving...');
 
-        chrome.tabs.query({"currentWindow": true}, function(tabs){
+        // directly call move_to_new_window()
 
+        chrome.tabs.query({"currentWindow": true}, function(tabs){
             
             var tabs_to_move = tabs;
             move_to_new_window(tabs_to_move);

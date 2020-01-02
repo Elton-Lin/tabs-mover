@@ -6,189 +6,58 @@ console.log("popup is run");
 // - button(trigger a function/callback in background for the actual work) to move the tabs to new window
 
 
-// this is a copy from https://github.com/ardcore/chrome-better-bookmark
-// not used directly, but for inspiration and template to learn setting up .js UI elements and events
-var categoryNodes = [];
-var wrapper;
-var focusedElement;
-//var fuzzySearch;
-var currentNodeCount = 0;
-
-var DOWN_KEYCODE = 40;
-var UP_KEYCODE = 38;
-var CONFIRM_KEYCODE = 13;
-
-function filterRecursively(nodeArray, childrenProperty, filterFn, results) {
-
-  results = results || [];
-
-  nodeArray.forEach( function( node ) {
-    if (filterFn(node)) results.push( node );
-    if (node.children) filterRecursively(node.children, childrenProperty, filterFn, results);
-  });
-
-  return results;
-
-};
-
-function createUiElement(node) {
-
-  var el = document.createElement("span");
-  el.setAttribute("data-id", node.id);
-  el.setAttribute("data-count", node.children.length);
-  el.setAttribute("data-title", node.title);
-  el.innerHTML = node.title;
-
-  return el;
-
-}
-
-function triggerClick(element) {
-
-  var categoryId = element.getAttribute("data-id");
-  var newCategoryTitle;
-
-  if (categoryId == "NEW") {
-
-    newCategoryTitle = element.getAttribute("data-title");
-
-    chrome.bookmarks.create({
-      title: newCategoryTitle
-    }, function(res) {
-      processBookmark(res.id);
-    })
-
-  } else {
-
-    processBookmark(categoryId);
-
-  }
-
-}
-
-function processBookmark(categoryId) {
-
-  getCurrentUrlData(function(url, title) {
-
-    if (title && categoryId && url) {
-      addBookmarkToCategory(categoryId, title, url);
-      window.close();
-    }
-
-  });
-
-}
-
-function addBookmarkToCategory(categoryId, title, url) {
-
-  chrome.bookmarks.create({
-    'parentId': categoryId,
-    'title': title,
-    'url': url
-  });
-
-}
-
-function getCurrentUrlData(callbackFn) {
-
-  chrome.tabs.query({'active': true, 'currentWindow': true}, function (tabs) {
-    callbackFn(tabs[0].url, tabs[0].title)
-  });
-
-}
-
-function createUiFromNodes( categoryNodes ) {
-
-  var categoryUiElements = [];
-  currentNodeCount = categoryNodes.length;
-
-  categoryNodes.forEach( function( node ) {
-    categoryUiElements.push( createUiElement(node) );
-  })
-
-  categoryUiElements.forEach( function( element ) {
-    wrapper.appendChild( element );
-  });
-
-};
-
-function resetUi() {
-
-  wrapper.innerHTML = "";
-
-};
-
-function focusItem(index) {
-
-  if (focusedElement) focusedElement.classList.remove("focus");
-  focusedElement = wrapper.childNodes[index];
-  focusedElement.classList.add("focus");
-
-  focusedElement.scrollIntoView(false);
-
-}
-
-function addCreateCategoryButton(categoryName) {
-
-  var el = document.createElement("span");
-  el.setAttribute("data-id", "NEW");
-  el.setAttribute("data-title", categoryName);
-  el.classList.add("create");
-  el.innerHTML = chrome.i18n.getMessage("new") + ": " + categoryName;
-
-  wrapper.appendChild(el);
-  currentNodeCount = currentNodeCount + 1;
-
-}
-
-function createInitialTree() {
-
-  chrome.bookmarks.getTree( function(t) {
-
-    wrapper = document.getElementById("wrapper");
-
-    var options = {
-      keys: ['title'],
-      threshold: 0.4
-    }
-    
-    categoryNodes = filterRecursively(t, "children", function(node) {
-      return !node.url && node.id > 0;
-    }).sort(function(a, b) {
-      return b.dateGroupModified - a.dateGroupModified;
-    })
-
-    createUiFromNodes( categoryNodes );
-
-    wrapper.style.width = wrapper.clientWidth + "px";
-
-    if (currentNodeCount > 0) focusItem(0);
-
-    //fuzzySearch = new Fuse(categoryNodes, options);
-
-    wrapper.addEventListener("click", function(e) {
-      triggerClick(e.target);
-    })
-
-  });
-
-}
 
 // ---------------my code ------------------------
 
 var wrapper; // the UI html holder
 var cur_tabs = []; // sort by tab index for now
 var cur_tab_count = 0;
+var tabs_to_move = [];
+
+// tab object needs more attributes
+// - selected or not (on/off)
+
+//var counter = 0;
+document.getElementById("moveButton").addEventListener("click", executeButton);
+
+function executeButton() {
+
+	//console.log("clickedddd");
+	//counter += 1;
+	//document.getElementById("moveButton").innerHTML = counter;
+}
+
+
+// Extract useful info and add additional attributes
+// Reduce a huge tab object - good?
+function processTabs(tabs) {
+
+	cur_tabs.length = cur_tab_count;
+	//console.log(cur_tabs.length);
+	tabs.forEach(function(t) {
+
+		var ct = {
+			"id": t.id,
+			"title": t.title,
+			"index": t.index,
+			"favIconUrl": t.favIconUrl,
+			"selected": false
+		}
+		cur_tabs.push(ct);
+	});
+	
+}
+
 
 /* Construct the popup UI with a list of tabs */
-function generate_UI(cur_tabs) {
+function generateUI(tabs) {
 
     var tabs_UI_elems = [];
-    cur_tab_count = cur_tabs.length;
+    cur_tab_count = tabs.length;
 
     // combine the next two to only one function?
-    cur_tabs.forEach(function(t) {
-        tabs_UI_elems.push(gen_UI_elem(t));
+    tabs.forEach(function(t) {
+        tabs_UI_elems.push(genElemUI(t));
     });
 
     tabs_UI_elems.forEach(function(elem) {
@@ -197,7 +66,7 @@ function generate_UI(cur_tabs) {
 }
 
 /* Construct a single UI representation of tab - favicon and title are displayed */
-function gen_UI_elem(tab) {
+function genElemUI(tab) {
 
 	var elem = document.createElement("span");
 
@@ -215,21 +84,24 @@ function gen_UI_elem(tab) {
 		img = "<img src = \'" + tab.favIconUrl + "\'" + dimension;
     
     var text = img + "<body>" + tab.title + "</body>";
-    console.log(text);
+    // console.log(text);
     elem.innerHTML = text;
 
     return elem;
 }
 
-function create_tabs_list() {
+function createTabsList() {
 
     chrome.tabs.query({"currentWindow": true}, function(tabs) {
 
         wrapper = document.getElementById("wrapper");
-
+		
+		// construct cur_tabs
+		cur_tab_count = tabs.length;
+		processTabs(tabs);
         
         // extract favicon, title, (url) to display and create tab objects UI
-        generate_UI(tabs);
+        generateUI(cur_tabs);
 
         // (hover), selectable
 
@@ -243,5 +115,5 @@ function create_tabs_list() {
 (function() {
 
 
-    create_tabs_list();
+    createTabsList();
 })();
