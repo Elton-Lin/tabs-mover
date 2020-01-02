@@ -200,7 +200,13 @@ function gen_UI_elem(tab) {
     elem.setAttribute("data-index", tab.index);
     elem.setAttribute("data-title", tab.title);
     elem.setAttribute("data-favIconURL", tab.favIconUrl);
-    elem.innerHTML = tab.title;
+    
+    // construct the favicon with constant size
+    // @@need to have a default icon
+    var img = "<img src = \'" + tab.favIconUrl + "\' width=\'32px\' height=\'32px\'>";
+    var text = img + "<body>" + tab.title + "</body>";
+    console.log(text);
+    elem.innerHTML = text;
 
     return elem;
 }
