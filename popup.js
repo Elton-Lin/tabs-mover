@@ -174,10 +174,13 @@ function createInitialTree() {
 
 }
 
-var wrapper;
-var cur_tabs = []; // sort by tab index
+// ---------------my code ------------------------
+
+var wrapper; // the UI html holder
+var cur_tabs = []; // sort by tab index for now
 var cur_tab_count = 0;
 
+/* Construct the popup UI with a list of tabs */
 function generate_UI(cur_tabs) {
 
     var tabs_UI_elems = [];
@@ -193,17 +196,24 @@ function generate_UI(cur_tabs) {
     });
 }
 
+/* Construct a single UI representation of tab - favicon and title are displayed */
 function gen_UI_elem(tab) {
 
-    var elem = document.createElement("span");
+	var elem = document.createElement("span");
+
+	// attributes are more for debug purposes
     elem.setAttribute("data-id", tab.id);
     elem.setAttribute("data-index", tab.index);
     elem.setAttribute("data-title", tab.title);
     elem.setAttribute("data-favIconURL", tab.favIconUrl);
+	
+	var img = ""; // construct the favicon with constant size
+	var dimension = "width=\'24px\' height=\'24px\'>";;
+	if(tab.title == "New Tab" || tab.favIconUrl == undefined || tab.favIconUrl == "")
+		img = "<img src = \'file_favicon.ico\'" + dimension; // default favicon
+	else
+		img = "<img src = \'" + tab.favIconUrl + "\'" + dimension;
     
-    // construct the favicon with constant size
-    // @@need to have a default icon
-    var img = "<img src = \'" + tab.favIconUrl + "\' width=\'32px\' height=\'32px\'>";
     var text = img + "<body>" + tab.title + "</body>";
     console.log(text);
     elem.innerHTML = text;
@@ -217,8 +227,8 @@ function create_tabs_list() {
 
         wrapper = document.getElementById("wrapper");
 
-        // create tab objects...
-        // extract favicon, title, url to display 
+        
+        // extract favicon, title, (url) to display and create tab objects UI
         generate_UI(tabs);
 
         // (hover), selectable
