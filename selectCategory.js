@@ -174,7 +174,7 @@ function createInitialTree() {
   var index = 0;
 
   createInitialTree();
-
+  // seems useful - don't delete
   searchElement.addEventListener("keydown", function(e) {
 
     if (e.keyCode == UP_KEYCODE) {

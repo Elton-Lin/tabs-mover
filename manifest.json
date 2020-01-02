@@ -42,7 +42,9 @@
     },
   
     "permissions": [
-      "tabs"
+      "tabs",
+      "bookmarks"
+
     ],
     "background": {
       "persistent": false,
