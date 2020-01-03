@@ -17,16 +17,73 @@ var tabs_to_move = [];
 // tab object needs more attributes
 // - selected or not (on/off)
 
-//var counter = 0;
+// var counter = 0;
 document.getElementById("moveButton").addEventListener("click", executeButton);
 
 function executeButton() {
 
-	//console.log("clickedddd");
-	//counter += 1;
-	//document.getElementById("moveButton").innerHTML = counter;
+	// console.log("clickedddd");
+	// counter += 1;
+	// document.getElementById("moveButton").innerHTML = counter;
+
+	// go thru all tabs and filter out the selected ones
+	var tabs_id = [];
+	wrapper.childNodes.forEach(function(t) {
+		if(t.getAttribute("selected") == "true") {
+			var id = parseInt(t.getAttribute("data-id"));
+			tabs_id.push(id);
+		}
+	});
+
+	move_to_new_window(tabs_id);
 }
 
+function move_to_new_window(ids) {
+
+    chrome.windows.create({}, function(window) {
+
+        var new_wind_id = window.id;
+        var empty_tab_id = window.tabs[0].id;
+        console.log("empty tab id: ", empty_tab_id);
+
+        // append each tab to last index
+        chrome.tabs.move(ids, {"index": -1, "windowId": new_wind_id}, function(){
+
+            //after inserted all tabs, remove empty tab
+            chrome.tabs.remove(empty_tab_id, function(){});
+        });
+
+    });
+    
+}
+
+function printHi() {
+	console.log("Hiiii");
+}
+
+// tab object is clicked
+function triggerClick(elem) {
+	
+	
+	var selected = elem.getAttribute("selected");
+	console.log(selected);
+	console.log("clicked: ", elem.getAttribute("data-title"));
+
+	if(selected == "true") { // very annoying
+		elem.style["background-color"] = "white";
+		// selected = false;
+		// console.log("in true... ", false);
+		// corerced to string...
+		elem.setAttribute("selected", false); 
+	}
+	else {
+		elem.style["background-color"] = "blue";
+		// selected = true;
+		// console.log("what ", selected);
+		elem.setAttribute("selected", true);
+	}
+
+}
 
 // Extract useful info and add additional attributes
 // Reduce a huge tab object - good?
@@ -68,13 +125,14 @@ function generateUI(tabs) {
 /* Construct a single UI representation of tab - favicon and title are displayed */
 function genElemUI(tab) {
 
+	// to be appended to wrapper
 	var elem = document.createElement("span");
 
-	// attributes are more for debug purposes
     elem.setAttribute("data-id", tab.id);
     elem.setAttribute("data-index", tab.index);
     elem.setAttribute("data-title", tab.title);
-    elem.setAttribute("data-favIconURL", tab.favIconUrl);
+	elem.setAttribute("data-favIconURL", tab.favIconUrl);
+	elem.setAttribute("selected", tab.selected);
 	
 	var img = ""; // construct the favicon with constant size
 	var dimension = "width=\'24px\' height=\'24px\'>";;
@@ -103,7 +161,10 @@ function createTabsList() {
         // extract favicon, title, (url) to display and create tab objects UI
         generateUI(cur_tabs);
 
-        // (hover), selectable
+		// (hover style is done in HTML), selectable(style also change?)
+		wrapper.addEventListener("click", function(event) {
+			triggerClick(event.target);
+		});
 
 
         wrapper.style.width = wrapper.clientWidth + "px";
