@@ -13,7 +13,7 @@ var wrapper; // the UI html holder
 var cur_tabs = []; // sort by tab index for now
 var cur_tab_count = 0;
 var tabs_to_move = [];
-
+var num_tabs_to_move = 0;
 // tab object needs more attributes
 // - selected or not (on/off)
 
@@ -35,7 +35,10 @@ function executeButton() {
 		}
 	});
 
-	move_to_new_window(tabs_id);
+	if(tabs_id.length > 0) {
+		move_to_new_window(tabs_id);
+	}
+	
 }
 
 function move_to_new_window(ids) {
@@ -69,19 +72,23 @@ function triggerClick(elem) {
 	console.log(selected);
 	console.log("clicked: ", elem.getAttribute("data-title"));
 
-	if(selected == "true") { // very annoying
+	// booleans corerced to string...
+	if(selected == "true") {
+
 		elem.style["background-color"] = "white";
-		// selected = false;
-		// console.log("in true... ", false);
-		// corerced to string...
+		num_tabs_to_move -= 1;
 		elem.setAttribute("selected", false); 
 	}
 	else {
+
 		elem.style["background-color"] = "blue";
-		// selected = true;
-		// console.log("what ", selected);
+		num_tabs_to_move += 1;
 		elem.setAttribute("selected", true);
 	}
+
+	// update button display
+	var button = document.getElementById("moveButton");
+	button.innerHTML = "Move Selected Tabs (" + num_tabs_to_move + ")";
 
 }
 
@@ -110,7 +117,6 @@ function processTabs(tabs) {
 function generateUI(tabs) {
 
     var tabs_UI_elems = [];
-    cur_tab_count = tabs.length;
 
     // combine the next two to only one function?
     tabs.forEach(function(t) {
