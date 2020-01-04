@@ -75,13 +75,13 @@ function triggerClick(elem) {
 	// booleans corerced to string...
 	if(selected == "true") {
 
-		elem.style["background-color"] = "white";
+		elem.style["background-color"] = "transparent";
 		num_tabs_to_move -= 1;
 		elem.setAttribute("selected", false); 
 	}
 	else {
 
-		elem.style["background-color"] = "blue";
+		elem.style["background-color"] = "#C5ECFC";
 		num_tabs_to_move += 1;
 		elem.setAttribute("selected", true);
 	}

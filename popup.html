@@ -5,12 +5,12 @@ body {
     color: #333;
   }
 
-  input {
+  /*input {
     border: 1px solid #ccc;
     width: 100%;
     padding: 4px;
     margin: 0 0 10px 0;
-  }
+  }*/
 
   span {
     font-family: "Lucida Grande", Tahoma, sans-serif;
@@ -23,38 +23,38 @@ body {
     cursor: pointer;
   }
 
-  span:hover + span:not(.create), .focus + span:not(.create) {
+  /* span:hover + span:not(.create), .focus + span:not(.create) {
     border-top-color: transparent;
-  }
+  } */
 
   span:hover, .focus {
     color: #000;
     border-radius: 5px;
-    background: #C5ECFC;
+    /* background: #C5ECFC; */
+    background-color: #C5ECFC!important;
   }
 
-  span:first-child {
+  /* span:first-child {
     border-top-color: transparent;
-  }
+  } */
 
-  .create {
+  /* .create {
     margin-top: 10px;
     border-top: 1px solid #eee;
     white-space: normal;
-  }
+  } */
 
 
-    #wrapper {
+  #wrapper {
     min-width: 200px;
     max-width: 300px;
     text-align: left;
-    }
+  }
 
 
 </style>
 <!--input id="search" placeholder="Filter..."></input-->
 <button id="moveButton" >Move Selected Tabs (0)</button>
-<!--p id="moveButton">Click me.</p-->
 <div id="wrapper"></div>
 <script type="text/javascript" src="popup.js"></script>
 <script type="text/javascript" src="content.js"></script>
