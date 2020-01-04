@@ -1,36 +1,43 @@
 // This is a background script, listed in the manifest
 
 
+chrome.runtime.onConnect.addListener(function(port) {
 
-// first create a new window and move selected tabs to it
-function move_to_new_window(tabs) {
+    console.assert(port.name == "portatoe");
+    console.log("port connection established");
+
+    port.onMessage.addListener(function(msg) {
+        console.log("received message!!!");
+        move_to_new_window(msg.ids);
+    });
+});
+
+
+
+// Move the selected tabs to a new window
+function move_to_new_window(ids) {
 
     chrome.windows.create({}, function(window) {
 
         var new_wind_id = window.id;
         var empty_tab_id = window.tabs[0].id;
-        console.log("empty tab id: ", empty_tab_id);
+        // console.log("empty tab id: ", empty_tab_id);
+		
+		//chrome.tabs.update(empty_tab_id, {"url": "https://www.google.com/"}, function(ignore){});
 
         // append each tab to last index
-        chrome.tabs.move([tabs[0].id, tabs[1].id], {"index": -1, "windowId": new_wind_id}, function(){
-
+        chrome.tabs.move(ids, {"index": -1, "windowId": new_wind_id}, function(){
+			
+			console.log("inside move");
             //after inserted all tabs, remove empty tab
             chrome.tabs.remove(empty_tab_id, function(){});
-
-            // chrome.tabs.query({"windowId": window_id}, function(tabs) {
-
-            //     tabs.forEach(function(t){
-            //         console.log("tabs: ", t.id, t.title);
-            //     });
-            //     //chrome.tab.remove(tabs[0].id, function(){});
-            // });
         });
 
     });
-
     
 }
 
+// NOT USED right now
 // prototype: triggered by keyboard command
 // next is to enable UI elements and click trigger
 chrome.commands.onCommand.addListener(function(command) {

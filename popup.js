@@ -1,76 +1,51 @@
-console.log("popup is run");
+//console.log("popup is run");
 
-// have listeners to update existed tabs?
-// when fired, present all tabs in current window in a drop down menu
-// - click to select (multi)
-// - button(trigger a function/callback in background for the actual work) to move the tabs to new window
+// TODO: keyboard shortcuts to perform everything
 
-
-
-// ---------------my code ------------------------
 
 var wrapper; // the UI html holder
 var cur_tabs = []; // sort by tab index for now
 var cur_tab_count = 0;
 var tabs_to_move = [];
 var num_tabs_to_move = 0;
-// tab object needs more attributes
-// - selected or not (on/off)
+var button;
 
-// var counter = 0;
-document.getElementById("moveButton").addEventListener("click", executeButton);
+var port = chrome.runtime.connect({name: "portatoe"});
+//port.postMessage({joke: [1, 2224, 3]});
 
 function executeButton() {
 
-	// console.log("clickedddd");
-	// counter += 1;
-	// document.getElementById("moveButton").innerHTML = counter;
+	if(num_tabs_to_move > 0) {
 
-	// go thru all tabs and filter out the selected ones
-	var tabs_id = [];
-	wrapper.childNodes.forEach(function(t) {
-		if(t.getAttribute("selected") == "true") {
-			var id = parseInt(t.getAttribute("data-id"));
-			tabs_id.push(id);
-		}
-	});
+		// go thru all tabs and filter out the selected ones
+		var tabs_id = [];
+		wrapper.childNodes.forEach(function(t) {
+			if(t.getAttribute("selected") == "true") {
+				var id = parseInt(t.getAttribute("data-id"));
+				tabs_id.push(id);
+			}
+		});
 
-	if(tabs_id.length > 0) {
-		move_to_new_window(tabs_id);
+		//move_to_new_window(tabs_id);
+		port.postMessage({ids: tabs_id});
 	}
+	
 	
 }
 
-function move_to_new_window(ids) {
+// function printHi() {
+// 	console.log("Hiiii");
+// }
 
-    chrome.windows.create({}, function(window) {
 
-        var new_wind_id = window.id;
-        var empty_tab_id = window.tabs[0].id;
-        console.log("empty tab id: ", empty_tab_id);
 
-        // append each tab to last index
-        chrome.tabs.move(ids, {"index": -1, "windowId": new_wind_id}, function(){
-
-            //after inserted all tabs, remove empty tab
-            chrome.tabs.remove(empty_tab_id, function(){});
-        });
-
-    });
-    
-}
-
-function printHi() {
-	console.log("Hiiii");
-}
-
-// tab object is clicked
+// tab object is clicked - set selected and highligh states
 function triggerClick(elem) {
 	
 	
 	var selected = elem.getAttribute("selected");
-	console.log(selected);
-	console.log("clicked: ", elem.getAttribute("data-title"));
+	// console.log(selected);
+	// console.log("clicked: ", elem.getAttribute("data-title"));
 
 	// booleans corerced to string...
 	if(selected == "true") {
@@ -86,8 +61,7 @@ function triggerClick(elem) {
 		elem.setAttribute("selected", true);
 	}
 
-	// update button display
-	var button = document.getElementById("moveButton");
+	// update button display with new count
 	button.innerHTML = "Move Selected Tabs (" + num_tabs_to_move + ")";
 
 }
@@ -114,6 +88,7 @@ function processTabs(tabs) {
 
 
 /* Construct the popup UI with a list of tabs */
+// extract favicon, title, (url) to display and create tab objects UI
 function generateUI(tabs) {
 
     var tabs_UI_elems = [];
@@ -158,29 +133,28 @@ function createTabsList() {
 
     chrome.tabs.query({"currentWindow": true}, function(tabs) {
 
-        wrapper = document.getElementById("wrapper");
-		
-		// construct cur_tabs
 		cur_tab_count = tabs.length;
-		processTabs(tabs);
-        
-        // extract favicon, title, (url) to display and create tab objects UI
+		processTabs(tabs); // construct cur_tabs
         generateUI(cur_tabs);
-
-		// (hover style is done in HTML), selectable(style also change?)
-		wrapper.addEventListener("click", function(event) {
-			triggerClick(event.target);
-		});
-
 
         wrapper.style.width = wrapper.clientWidth + "px";
 
-        // button to execute
-    });
+	});
+	console.log("ho");
 }
 
 (function() {
 
+	wrapper = document.getElementById("wrapper");
+	createTabsList();
+	
+	// to set selected state and highlight for tab objects
+	wrapper.addEventListener("click", function(event) {
+		triggerClick(event.target);
+	});
 
-    createTabsList();
+	button = document.getElementById("moveButton");
+	document.getElementById("moveButton").addEventListener("click", executeButton);
+	
+
 })();

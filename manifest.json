@@ -42,12 +42,12 @@
     },
   
     "permissions": [
-      "tabs",
-      "bookmarks"
+      "tabs"
 
     ],
     "background": {
       "persistent": false,
       "scripts": ["background.js"]
     }
+    
   }
