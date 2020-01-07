@@ -22,13 +22,6 @@
       "default_popup": "popup.html"
     },
     "commands": {
-      "move-to-new-window": {
-        "suggested_key": {
-            "default": "Ctrl+Shift+Y",
-            "mac": "Command+Shift+Y"
-          },
-        "description": "move tabs to new window"
-      },
       "_execute_browser_action": {
   
         "suggested_key": {

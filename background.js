@@ -1,5 +1,6 @@
-// This is a background script, listed in the manifest
+// Elton Lin 1/6/2020
 
+// This is a background script, listed in the manifest
 
 chrome.runtime.onConnect.addListener(function(port) {
 
@@ -11,7 +12,6 @@ chrome.runtime.onConnect.addListener(function(port) {
         move_to_new_window(msg.ids);
     });
 });
-
 
 
 // Move the selected tabs to a new window
@@ -37,30 +37,38 @@ function move_to_new_window(ids) {
     
 }
 
+
+// "move-to-new-window": {
+//     "suggested_key": {
+//         "default": "Ctrl+Shift+Y",
+//         "mac": "Command+Shift+Y"
+//       },
+//     "description": "move tabs to new window"
+//   },
 // NOT USED right now
 // prototype: triggered by keyboard command
 // next is to enable UI elements and click trigger
-chrome.commands.onCommand.addListener(function(command) {
-    if(command == "move-to-new-window") {
-        console.log('moving...');
+// chrome.commands.onCommand.addListener(function(command) {
+//     if(command == "move-to-new-window") {
+//         console.log('moving...');
 
-        // directly call move_to_new_window()
+//         // directly call move_to_new_window()
 
-        chrome.tabs.query({"currentWindow": true}, function(tabs){
+//         chrome.tabs.query({"currentWindow": true}, function(tabs){
             
-            var tabs_to_move = tabs;
-            move_to_new_window(tabs_to_move);
+//             var tabs_to_move = tabs;
+//             move_to_new_window(tabs_to_move);
 
-            // var idx = tabs[1].id;
-            // chrome.tabs.move(tabs[0].id, {"index": -1}, function(){
-            //     console.log("index: ", idx, tabs[1].id);
-            //     chrome.tabs.remove(tabs[1].id, function(){});
-            // });
+//             // var idx = tabs[1].id;
+//             // chrome.tabs.move(tabs[0].id, {"index": -1}, function(){
+//             //     console.log("index: ", idx, tabs[1].id);
+//             //     chrome.tabs.remove(tabs[1].id, function(){});
+//             // });
             
-        });
+//         });
 
 
-    }
-    // printHi();
+//     }
+//     // printHi();
     
-});
+// });
